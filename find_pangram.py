@@ -27,7 +27,7 @@ def pangram_candidates():
 
 def pangram_length(word):
     l = len(word)
-    return 7 <= l and l <= 10
+    return 7 <= l and l <= 12
 
 
 def subset_length(word):
@@ -35,7 +35,7 @@ def subset_length(word):
 
 
 def can_pangram(word):
-    return len(set(word)) == 7 and 'er' not in word and 's' not in word and 'ed' not in word
+    return len(set(word)) == 7
 
 
 def get_words(word):
@@ -51,5 +51,25 @@ def filter_subsets(words, pangram):
 
 
 def multiple_pangrams(word):
-    other_grams = pangram_candidates()
-    return len(filter_subsets(other_grams, word)) > 1
+    number_of_pangrams(word) > 1
+
+def number_of_pangrams(word):
+    return len(filter_subsets(pangram_candidates(), word))
+
+def related_words(a, b):
+    return related_sets(set(a), set(b))
+
+def related_sets(a, b):
+    return set_distance(a, b) <= 1
+
+def distant_sets(a, b):
+    return set_distance(a, b) > min(list(map(len, [a, b])))
+
+def set_distance(a, b):
+    return max(len(a - b), len(b - a))
+
+def set_difference(a, b):
+    return ''.join(set(b) - set(a))
+
+def intersect(a, b):
+    return ''.join(set(a).intersection(b))
