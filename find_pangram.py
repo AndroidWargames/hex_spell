@@ -30,6 +30,10 @@ def pangram_length(word):
     return 7 <= l and l <= 12
 
 
+def length_filter(length):
+    return lambda x: len(x) == length
+
+
 def subset_length(word):
     return len(word) >= 4
 
@@ -51,13 +55,16 @@ def filter_subsets(words, pangram):
 
 
 def multiple_pangrams(word):
-    number_of_pangrams(word) > 1
+    return number_of_pangrams(word) > 1
 
 def number_of_pangrams(word):
     return len(filter_subsets(pangram_candidates(), word))
 
 def related_words(a, b):
     return related_sets(set(a), set(b))
+
+def reduceable_to(a, b):
+    return len(set(a)) - len(set(b)) == 1 and related_words(a, b)
 
 def related_sets(a, b):
     return set_distance(a, b) <= 1

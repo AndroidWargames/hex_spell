@@ -1,16 +1,20 @@
 from find_pangram import *
 from random import sample
 from jit_tree import JitTree
+from word_game.base_game import BaseGame
 
-
-class ChainGame:
+class ReductionGame(BaseGame):
     def __init__(self, first_word):
         if first_word is None:
-            first_word = sample(pangram_candidates(), 1)[0]
+            candidates = list(filter(length_filter(4), all_words()))
+            candidates = list(filter(lambda x: len(set(x)) == 3, candidates))
+            first_word = sample(candidates, 1)[0]
         first_word = first_word.lower()
         self.first_word_set = self.word_hash(first_word)
-        self.words = {f"{self.first_word_set}": {first_word}}
+        self.words = dict()
+        self.guessable_words = set()
         self.first_word = first_word
+        self.add_word(self.first_word)
 
     def word_hash(self, word):
         return ''.join(sorted(list(set(word))))
@@ -21,6 +25,7 @@ class ChainGame:
             self.words[s].add(word)
         else:
             self.words[s] = {word}
+        self.add_new_guessable(word)
 
     def points(self):
         p = 0
@@ -33,11 +38,9 @@ class ChainGame:
         tree = JitTree(self.first_word_set, self.words.keys()).ordered_nodes()
         for node in tree:
             output += '\n '
-            old = set_difference(node.word.upper(), self.first_word.upper())
-            new = set_difference(self.first_word.upper(), node.word.upper())
+            old = set_difference(self.first_word.upper(), node.word.upper())
             shared = intersect(node.word.upper(), self.first_word.upper())
-            output += old + " " * (1 + node.level - len(old)) + " "
-            output += shared + "  " + new + "  |  "
+            output += shared + " " + old + " "
             output += " ".join(self.words[node.word])
         return output
 
@@ -59,29 +62,30 @@ class ChainGame:
 
     def guess(self, word):
         word = word.lower()
-        if word in pangram_candidates():
-            for i in self.words:
-                if related_words(i, word):
-                    self.add_word(word)
-                    self.save_game()
-                    break
+        if word in self.guessable_words:
+            self.add_word(word)
+            self.save_game()
 
-    def save_game(self):
-        with open(f"saved_games/{self.first_word}.chngm", "w+") as f:
-            f.write(self.first_word + "\n")
-            for k, v in self.words.items():
-                for word in v:
-                    f.write(word + "\n")
+    def add_new_guessable(self, new_word):
+        for word in all_words():
+            if reduceable_to(word, new_word):
+                self.guessable_words.add(word)
 
+    def found_words(self):
+        words = []
+        for k, v in self.words.items():
+            for word in v:
+                words.append(word)
+        return words
 
-def new_game(first_word=None):
-    h = ChainGame(first_word)
+def start(first_word=None):
+    h = ReductionGame(first_word)
     h.wait_for_input()
 
-def load_game(word):
+def load(word):
     h = None
-    with open(f"saved_games/{word}.chngm", "r") as f:
-        h = ChainGame(word)
+    with open(f"saved_games/{word}.redgm", "r") as f:
+        h = ReductionGame(word)
         lines = f.read().splitlines()
         for l in lines:
             h.add_word(l)
