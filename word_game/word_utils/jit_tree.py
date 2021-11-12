@@ -1,4 +1,4 @@
-from find_pangram import related_words
+from .find_pangram import related_words
 
 class JitTree:
     def __init__(self, root, words):

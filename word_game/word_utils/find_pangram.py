@@ -1,5 +1,7 @@
 import functools
+from pathlib import Path
 
+COMMON_WORDS_PATH = Path(__file__).parent / "./reference/common_words.txt"
 
 def memoize(func):
     cache = func.cache = {}
@@ -14,7 +16,7 @@ def memoize(func):
 
 @memoize
 def all_words():
-    with open("common_words.txt", "r") as f:
+    with open(COMMON_WORDS_PATH, "r") as f:
         return f.read().splitlines()
 
 

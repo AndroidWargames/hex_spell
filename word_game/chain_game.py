@@ -1,7 +1,8 @@
-from find_pangram import *
 from random import sample
-from jit_tree import JitTree
-from word_game.base_game import BaseGame
+
+from .word_utils.find_pangram import *
+from .word_utils.jit_tree import JitTree
+from .base_game import BaseGame
 
 class ChainGame(BaseGame):
     def __init__(self, first_word):

@@ -1,7 +1,6 @@
-from find_pangram import pangram_candidates, get_words, filter_letter, can_pangram
 from random import sample
-from word_game.base_game import BaseGame
-
+from .base_game import BaseGame
+from .word_utils.find_pangram import pangram_candidates, get_words, filter_letter, can_pangram
 
 class HexGame(BaseGame):
     def __init__(self):
